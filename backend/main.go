@@ -18,7 +18,7 @@ func main() {
 
 	rng := rand.New(rand.NewSource(time.Now().UnixNano()))
 
-	apiKey := os.Getenv("SecretKey")
+	apiKey := os.Getenv("SECRET_KEY")
 	if apiKey == "" {
 		log.Fatal("FATAL: SecretKey variable not set")
 	}

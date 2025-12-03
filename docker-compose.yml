@@ -1,0 +1,13 @@
+services:
+  app:
+    image: vocab-test
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+      - "8080:8080"
+    env_file:
+      - .env
+    environment:
+      SECRET_KEY: "${SECRET_KEY}"
