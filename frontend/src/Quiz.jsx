@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { getQuestion, checkAnswer } from "./api";
+import React, { useState } from "react";
+import { getNextQuestion, checkAnswer } from "./api";
 
 export default function Quiz({ words, firstQuestion, restartQuiz }) {
   const wordList = words.map((w) => w.trim());
@@ -11,15 +11,15 @@ export default function Quiz({ words, firstQuestion, restartQuiz }) {
   const loadNext = async () => {
     if (questionIndex === 14) return;
 
-    const res = await getQuestion(questionIndex + 1, wordList);
+    const res = await getNextQuestion(questionIndex + 1, wordList);
     setQuestion(res.data.question);
     setQuestionIndex(questionIndex + 1);
     setFeedback("");
   };
 
   const choose = async (i) => {
-    const correctIndex = question.CorrectIndex;
-    const res = await checkAnswer(i, correctIndex);
+    const correctIndex = question.correctIndex;
+    const res = await checkAnswer(questionIndex, i);
     const correct = res.data.correct;
 
     if (correct) {
@@ -48,9 +48,9 @@ export default function Quiz({ words, firstQuestion, restartQuiz }) {
   return (
     <div style={{ padding: 30 }}>
       <h3>Question {questionIndex + 1}</h3>
-      <p>{question.Sentence}</p>
+      <p>{question.sentence}</p>
 
-      {question.Options.map((opt, i) => (
+      {question.options.map((opt, i) => (
         <button key={i} onClick={() => choose(i)}>
           {opt}
         </button>
