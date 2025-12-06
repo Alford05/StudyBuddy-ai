@@ -26,13 +26,13 @@ export default function App() {
   };
 
   const restartQuizWithSameWords = async () => {
+    await restartQuizApi(null);
     setQuizStarted(false);
     setInitialQuestion(null);
-    setWordList([]);
-    setWords(words);
   };
 
-  const restartQuizWithNewWords = () => {
+  const restartQuizWithNewWords = async () => {
+    await restartQuizApi(null);
     setQuizStarted(false);
     setInitialQuestion(null);
     setWordList([]);

@@ -26,7 +26,7 @@ export default function Quiz({ words, firstQuestion, restartQuiz }) {
       setScore((s) => s + 1);
       setFeedback("Correct!");
     } else {
-      setFeedback("Wrong! Correct: " + res.data.correctAnswer);
+      setFeedback("Wrong! Correct: " + question.options[correctIndex]);
     }
 
     setTimeout(loadNext, 1500);

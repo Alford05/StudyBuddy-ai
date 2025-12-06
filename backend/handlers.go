@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"math/rand"
 	"net/http"
 	"strconv"
@@ -28,13 +29,16 @@ func handleStart(c *gin.Context, apiKey string, rng *rand.Rand) {
 	session.Set("words", req.Words)
 	session.Set("currentIndex", 0)
 	session.Set("score", 0)
-	session.Save()
 
 	q, err := buildSingleWordQuestion(req.Words, 0, apiKey, rng)
 	if err != nil {
 		c.JSON(500, gin.H{"error": err.Error()})
 		return
 	}
+
+	// store correct index for question 0
+	session.Set("correctIndex_0", q.CorrectIndex)
+	session.Save()
 
 	c.JSON(200, QuestionResponse{Question: q})
 }
@@ -65,6 +69,9 @@ func handleQuestion(c *gin.Context, apiKey string, rng *rand.Rand) {
 		c.JSON(500, gin.H{"error": err.Error()})
 		return
 	}
+	// NEW: store correct index for current question
+	session.Set(fmt.Sprintf("correctIndex_%d", index), q.CorrectIndex)
+	session.Save()
 
 	c.JSON(200, QuestionResponse{Question: q})
 }
@@ -76,34 +83,27 @@ func handleCheck(c *gin.Context) {
 		return
 	}
 
-	// Rebuild the same question to verify correctness
-	var correctPair Question
-	var err error
 	session := sessions.Default(c)
-	words, ok := session.Get("words").([]string)
-	if !ok || len(words) != 10 {
-		c.JSON(400, gin.H{"error": "Words not found in session"})
-		return
-	}
-	if req.QuestionIndex < 10 {
-		correctPair, err = buildSingleWordQuestion(words, req.QuestionIndex, "", nil)
-	} else {
-		correctPair, err = buildTwoWordQuestion(words, "", nil)
-	}
 
-	if err != nil {
-		c.JSON(500, gin.H{"error": err.Error()})
+	key := fmt.Sprintf("correctIndex_%d", req.QuestionIndex)
+	val := session.Get(key)
+	correctIndex, ok := val.(int)
+	if !ok {
+		c.JSON(400, gin.H{"error": "Correct index not found in session"})
 		return
 	}
 
-	correct := req.SelectedIndex == correctPair.CorrectIndex
+	correct := req.SelectedIndex == correctIndex
 	if correct {
-		CheckAnswer(req.SelectedIndex, correctPair.CorrectIndex) //update score if correct
+		scoreVal := session.Get("score")
+		score, _ := scoreVal.(int)
+		score++
+		session.Set("score", score)
+		session.Save()
 	}
 
 	c.JSON(200, CheckResponse{
-		Correct:       correct,
-		CorrectAnswer: correctPair.Options[correctPair.CorrectIndex],
+		Correct: correct,
 	})
 }
 
@@ -114,10 +114,9 @@ func handleRestart(c *gin.Context) {
 	if err := c.BindJSON(&req); err == nil && len(req.Words) == 10 {
 		//restart with new words
 		session.Set("words", req.Words)
-	} else {
-		// restart with same words; no modifications
-		//no action needed here
 	}
+	// restart with same words; no modifications
+	//no action needed here
 	session.Set("currentIndex", 0)
 	session.Set("score", 0)
 	session.Save()
