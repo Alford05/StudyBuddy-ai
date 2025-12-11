@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import Quiz from "./Quiz";
-import { startQuiz } from "./api";
+import { startQuiz, restartQuizApi } from "./api";
 
 export default function App() {
   const [words, setWords] = useState("");
@@ -21,7 +21,11 @@ export default function App() {
       setInitialQuestion(res.data.question);
       setQuizStarted(true);
     } catch (err) {
-      alert("Error starting quiz.");
+        console.error("startQuiz error:", err.response || err);
+        alert(
+            "Error starting quiz: " + 
+            (err.response?.data?.error || err.message || "check console")
+        );
     }
   };
 

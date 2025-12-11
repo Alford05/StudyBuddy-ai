@@ -9,7 +9,11 @@ export default function Quiz({ words, firstQuestion, restartQuiz }) {
   const [feedback, setFeedback] = useState("");
 
   const loadNext = async () => {
-    if (questionIndex === 14) return;
+    if (questionIndex === 14) {
+        setQuestionIndex(15);
+        setFeedback("");
+        return;
+    }
 
     const res = await getNextQuestion(questionIndex + 1, wordList);
     setQuestion(res.data.question);
@@ -51,7 +55,11 @@ export default function Quiz({ words, firstQuestion, restartQuiz }) {
       <p>{question.sentence}</p>
 
       {question.options.map((opt, i) => (
-        <button key={i} onClick={() => choose(i)}>
+        <button 
+          key={i} 
+          onClick={() => choose(i)}
+          style={{ marginRight: "8px" }}
+        >
           {opt}
         </button>
       ))}
