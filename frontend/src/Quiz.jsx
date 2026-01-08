@@ -13,17 +13,23 @@ export default function Quiz({ words, firstQuestion, restartQuiz }) {
 
   // Fetch a question by index (0..14)
   const loadQuestion = async (index) => {
+    console.log("Loading question index (GET /api/question):", index);
     const res = await getNextQuestion(index, wordList);
+    console.log("Question loaded:", index, res.data.question.answerWords);
     setQuestion(res.data.question);
     setQuestionIndex(index);
     setFeedback("");
   };
 
   const choose = async (selectedIndex) => {
+    const currentIndex = questionIndex;  //capture current index
+    console.log("CHECK questionIndex =", currentIndex, "selected =", selectedIndex);
     // Ask backend if this choice is correct for THIS question index
     const res = await checkAnswer(questionIndex, selectedIndex);
     const correct = res.data.correct;
     const correctIndex = question.correctIndex;
+
+    console.log("RESULT questionIndex =", currentIndex, "correct =", correct);
 
     if (correct) {
       setScore((s) => s + 1);
@@ -47,6 +53,8 @@ export default function Quiz({ words, firstQuestion, restartQuiz }) {
     }, 1500);
   };
 
+  console.log("RENDER questionIndex =", questionIndex);
+
   if (!question) {
     return <h3>Loading...</h3>;
   }
@@ -63,7 +71,13 @@ export default function Quiz({ words, firstQuestion, restartQuiz }) {
 
   return (
     <div style={{ padding: 30 }}>
-      <h3>Question {questionIndex + 1} of 15</h3>
+      <h3>
+        Question {questionIndex + 1} of 15{"  "}
+        <span style={{ fontSize: 12, opacity: 0.6 }}>
+          (debug index: {questionIndex})
+          </span>
+        </h3>
+
       <p>{question.sentence}</p>
 
       {question.options.map((opt, i) => (
@@ -80,3 +94,4 @@ export default function Quiz({ words, firstQuestion, restartQuiz }) {
     </div>
   );
 }
+
