@@ -64,6 +64,40 @@ flowchart LR
 
 ---
 
+## Technical Highlights
+
+### AI Integration
+
+- Integrated Google Gemini API to generate contextual vocabulary questions dynamically
+- Designed prompt generation and response parsing workflows
+- Managed external API communication and error handling
+
+### Session-Based Quiz State
+
+- Implemented cookie-based session management in Go
+- Maintained quiz progress across multiple requests
+- Stored user state without requiring authentication
+
+### Backend API Design
+
+- Built RESTful endpoints using the Gin framework
+- Separated handlers, models, and business logic into distinct layers
+- Implemented JSON request/response patterns for frontend integration
+
+### Containerized Deployment
+
+- Dockerized frontend and backend services
+- Configured Nginx as a reverse proxy
+- Orchestrated multi-container deployment with Docker Compose
+
+### Frontend-Backend Communication
+
+- React frontend communicates with Go API through Axios
+- Managed asynchronous quiz workflows and state updates
+- Implemented dynamic question loading and answer validation
+
+---
+
 ## Quiz Flow
 
 ```mermaid
@@ -100,7 +134,7 @@ sequenceDiagram
 ## Project Structure
 
 ```text
-StudyBuddyv2/
+StudyBuddy-ai/
 │
 ├── backend/
 │   ├── main.go
